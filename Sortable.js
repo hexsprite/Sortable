@@ -23,7 +23,7 @@
 	}
 })(function () {
 	"use strict";
-	
+
 	if (typeof window == "undefined" || typeof window.document == "undefined") {
 		return function() {
 			throw new Error( "Sortable.js requires a window with a document" );
@@ -270,6 +270,10 @@
 				return; // only left button or enabled
 			}
 
+			if (originalTarget.localName === 'input' || originalTarget.localName === 'textarea') {
+			        return; // ignore dragging if original area is editable
+      };
+
 			target = _closest(target, options.draggable, el);
 
 			if (!target) {
@@ -330,9 +334,19 @@
 				activeGroup = options.group;
 
 				dragStartFn = function () {
+					// Un-bind mousemove & touch move. Dragging process started
+          _off(ownerDocument, 'mousemove', dragStartFn);
+          _off(ownerDocument, 'touchmove', dragStartFn);
+
 					// Delayed drag has been triggered
 					// we can re-enable the events: touchmove/mousemove
 					_this._disableDelayedDrag();
+
+					// protect the elements that are not draggable
+          // (e.g. click & drag over text inputs within the draggable box)
+          if (!dragEl) {
+            return;
+          }
 
 					// Make the element draggable
 					dragEl.draggable = true;
@@ -365,7 +379,10 @@
 
 					_this._dragStartTimer = setTimeout(dragStartFn, options.delay);
 				} else {
-					dragStartFn();
+					// Start the dragging when mouse or touch are on the move
+					_on(ownerDocument, 'mousemove', dragStartFn);
+					_on(ownerDocument, 'touchmove', dragStartFn);
+					// dragStartFn();
 				}
 			}
 		},
