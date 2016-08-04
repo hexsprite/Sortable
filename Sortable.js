@@ -555,7 +555,6 @@
 			}
 
 			if (useFallback) {
-
 				if (useFallback === 'touch') {
 					// Bind touch events
 					_on(document, 'touchmove', this._onTouchMove);
@@ -788,6 +787,8 @@
 					_toggleClass(dragEl, this.options.ghostClass, false);
 					_toggleClass(dragEl, this.options.chosenClass, false);
 
+					cloneEl && cloneEl.parentNode.removeChild(cloneEl);
+
 					if (rootEl !== parentEl) {
 						newIndex = _index(dragEl, options.draggable);
 
@@ -805,7 +806,7 @@
 					}
 					else {
 						// Remove clone
-						cloneEl && cloneEl.parentNode.removeChild(cloneEl);
+						// cloneEl && cloneEl.parentNode.removeChild(cloneEl);
 
 						if (dragEl.nextSibling !== nextEl) {
 							// Get the index of the dragged element within its parent
